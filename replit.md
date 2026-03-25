@@ -95,3 +95,27 @@ Generated React Query hooks and fetch client from the OpenAPI spec (e.g. `useHea
 ### `scripts` (`@workspace/scripts`)
 
 Utility scripts package. Each script is a `.ts` file in `src/` with a corresponding npm script in `package.json`. Run scripts via `pnpm --filter @workspace/scripts run <script>`. Scripts can import any workspace package (e.g., `@workspace/db`) by adding it as a dependency in `scripts/package.json`.
+
+### `artifacts/fitboom` (`@workspace/fitboom`)
+
+Expo React Native mobile app for FitBoom - an Uzbekistan gym booking platform.
+
+**Design System (Dark Theme)**:
+- Background: `#0e0e1a` (dark navy)
+- Surface: `#151525`
+- Card: `#1a1a2e` with border `#252542`
+- Primary: `#F97316` (orange) with light variant `rgba(249,115,22,0.15)`
+- Text: `#FFFFFF` / secondary `rgba(255,255,255,0.55)`
+- Courses accent: `#7C3AED` (purple)
+- All modals/sheets use dark card background, never white
+- All Colors constants defined in `constants/Colors.ts`
+
+**Navigation**: 5-tab layout (Asosiy, Zallar, Skaner center raised, Video darslar, Bronlar) with dark `#10101e` tab bar. Map and Profile tabs hidden via `href: null`.
+
+**Key Screens**: auth.tsx (welcome + phone entry), complete-profile.tsx, home (tabs/index), gyms, bookings, scanner, courses, profile, map, gym/[id], payment, courses/[id]
+
+**Branding**: FitBoom logo = "Fit" white + "Boom" orange + orange zap icon. Green gradient credit card on home/profile screens.
+
+**Localization**: 3 languages (uz/ru/en) via `contexts/LanguageContext.tsx`
+
+**API**: `lib/api.ts` connects to api-server using `EXPO_PUBLIC_DOMAIN` env var.
