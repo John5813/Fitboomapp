@@ -6,11 +6,19 @@ import { authenticate, type AuthenticatedRequest } from "../../../middleware/aut
 const router = Router();
 
 const CREDIT_PACKAGES = [
-  { credits: 1, priceUzs: 50000 },
-  { credits: 3, priceUzs: 140000 },
-  { credits: 5, priceUzs: 220000 },
-  { credits: 10, priceUzs: 400000 },
+  { credits: 6, priceUzs: 120000, label: "Boshlang'ich" },
+  { credits: 13, priceUzs: 250000, label: "Mashhur", popular: true },
+  { credits: 24, priceUzs: 450000, label: "Premium" },
 ];
+
+const PAYMENT_CARD = process.env["PAYMENT_CARD"] || "9860 1234 5678 9012";
+
+router.get("/config", (_req, res) => {
+  res.json({
+    cardNumber: PAYMENT_CARD,
+    packages: CREDIT_PACKAGES,
+  });
+});
 
 router.get("/packages", (_req, res) => {
   res.json({ packages: CREDIT_PACKAGES });

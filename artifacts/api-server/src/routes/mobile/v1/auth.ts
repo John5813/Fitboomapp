@@ -130,6 +130,42 @@ router.post("/login", async (req, res) => {
   });
 });
 
+router.post("/admin-login", async (req, res) => {
+  const { password } = req.body;
+  const ADMIN_PASSWORD = process.env["ADMIN_PASSWORD"] || "fitboom_admin_2024";
+
+  if (password !== ADMIN_PASSWORD) {
+    return res.status(401).json({ message: "Noto'g'ri parol" });
+  }
+
+  let [admin] = await db
+    .select()
+    .from(usersTable)
+    .where(eq(usersTable.phone, "admin"))
+    .limit(1);
+
+  if (!admin) {
+    const [newAdmin] = await db
+      .insert(usersTable)
+      .values({ phone: "admin", name: "Admin", isAdmin: true, profileCompleted: true, credits: 0 })
+      .returning();
+    admin = newAdmin;
+  }
+
+  const token = signToken({ userId: admin.id, phone: admin.phone });
+  res.json({
+    token,
+    user: {
+      id: String(admin.id),
+      phone: admin.phone,
+      name: admin.name,
+      isAdmin: admin.isAdmin,
+      credits: admin.credits,
+      profileCompleted: admin.profileCompleted,
+    },
+  });
+});
+
 router.post("/logout", authenticate as any, (_req, res) => {
   res.json({ message: "Muvaffaqiyatli chiqildi" });
 });
