@@ -51,17 +51,6 @@ Every package extends `tsconfig.base.json` which sets `composite: true`. The roo
 
 ## Packages
 
-### `artifacts/api-server` (`@workspace/api-server`)
-
-Express 5 API server. Routes live in `src/routes/` and use `@workspace/api-zod` for request and response validation and `@workspace/db` for persistence.
-
-- Entry: `src/index.ts` — reads `PORT`, starts Express
-- App setup: `src/app.ts` — mounts CORS, JSON/urlencoded parsing, routes at `/api`
-- Routes: `src/routes/index.ts` mounts sub-routers; `src/routes/health.ts` exposes `GET /health` (full path: `/api/health`)
-- Depends on: `@workspace/db`, `@workspace/api-zod`
-- `pnpm --filter @workspace/api-server run dev` — run the dev server
-- `pnpm --filter @workspace/api-server run build` — production esbuild bundle (`dist/index.cjs`)
-- Build bundles an allowlist of deps (express, cors, pg, drizzle-orm, zod, etc.) and externalizes the rest
 
 ### `lib/db` (`@workspace/db`)
 
@@ -118,12 +107,10 @@ Expo React Native mobile app for FitBoom - an Uzbekistan gym booking platform.
 
 **Localization**: 3 languages (uz/ru/en) via `contexts/LanguageContext.tsx`
 
-**API**: `services/api.ts` is the primary API client. Connects to backend using `EXPO_PUBLIC_DOMAIN` in dev (set to `$REPLIT_DEV_DOMAIN` by the workflow) and falls back to `https://fitboom.replit.app` in production. `lib/api.ts` is a backward-compat shim.
+**API**: `services/api.ts` is the ONLY API client. Always connects to `https://fitboom.replit.app/api/mobile/v1`. No local backend — all requests go directly to the production FitBoom API. `lib/api.ts` is a backward-compat shim that delegates to `services/api.ts`.
 
 **Auth flow**: SMS OTP (`POST /auth/sms/send` → `POST /auth/sms/verify`) returns `{ accessToken (30d), refreshToken (90d), isNewUser, user }`. Telegram OTP via `@uzfitboom_bot`. Tokens stored in AsyncStorage as `fitboom_access_token` / `fitboom_refresh_token`. Auto-refreshes on 401.
 
-**SMS provider**: Uses `DEVSMS_API_KEY` (DevSMS.uz) if set, falls back to `ESKIZ_EMAIL`+`ESKIZ_PASSWORD` (Eskiz.uz), otherwise logs to console in dev.
-
 **Response format**: All API responses use `{ success: true, data: { ... } }` or `{ success: false, error: "..." }`. The `request()` function in `services/api.ts` auto-unwraps `data`.
 
-**Gender**: DB stores `male/female/other` enum; backend converts `Erkak`→`male`, `Ayol`→`female` automatically.
+**Gender**: Values sent directly as `"Erkak"` or `"Ayol"` — no conversion. Production API accepts these values natively.
