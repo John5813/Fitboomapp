@@ -7,6 +7,14 @@ import { authenticate, type AuthenticatedRequest } from "../../../middleware/aut
 
 const router = Router();
 
+function ok(res: any, data: any, status = 200) {
+  return res.status(status).json({ success: true, data });
+}
+
+function fail(res: any, error: string, status = 400) {
+  return res.status(status).json({ success: false, error });
+}
+
 async function formatBooking(booking: typeof bookingsTable.$inferSelect) {
   const [gym] = await db.select().from(gymsTable).where(eq(gymsTable.id, booking.gymId)).limit(1);
   return {
@@ -33,25 +41,25 @@ router.get("/", authenticate as any, async (req: AuthenticatedRequest, res) => {
     .orderBy(desc(bookingsTable.createdAt));
 
   const formatted = await Promise.all(bookings.map(formatBooking));
-  res.json({ bookings: formatted });
+  return ok(res, { bookings: formatted });
 });
 
 router.post("/", authenticate as any, async (req: AuthenticatedRequest, res) => {
-  const { gymId, scheduledDate, startTime, endTime, timeSlotId } = req.body;
+  const { gymId, scheduledDate, startTime, endTime } = req.body;
 
   if (!gymId || !scheduledDate) {
-    return res.status(400).json({ message: "Zal va sana talab qilinadi" });
+    return fail(res, "Zal va sana talab qilinadi");
   }
 
   const [user] = await db.select().from(usersTable).where(eq(usersTable.id, req.userId!)).limit(1);
-  if (!user) return res.status(404).json({ message: "Foydalanuvchi topilmadi" });
+  if (!user) return fail(res, "Foydalanuvchi topilmadi", 404);
 
   const [gym] = await db.select().from(gymsTable).where(eq(gymsTable.id, parseInt(gymId))).limit(1);
-  if (!gym) return res.status(404).json({ message: "Zal topilmadi" });
+  if (!gym) return fail(res, "Zal topilmadi", 404);
 
   const creditsNeeded = gym.credits || 1;
   if (user.credits < creditsNeeded) {
-    return res.status(400).json({ message: "Kredit yetarli emas" });
+    return fail(res, "Kredit yetarli emas");
   }
 
   const qrCode = uuidv4();
@@ -84,12 +92,12 @@ router.post("/", authenticate as any, async (req: AuthenticatedRequest, res) => 
   });
 
   const formatted = await formatBooking(booking);
-  res.status(201).json({ booking: formatted });
+  return ok(res, { booking: formatted }, 201);
 });
 
 router.delete("/:id", authenticate as any, async (req: AuthenticatedRequest, res) => {
   const bookingId = parseInt(req.params.id);
-  if (isNaN(bookingId)) return res.status(400).json({ message: "Noto'g'ri ID" });
+  if (isNaN(bookingId)) return fail(res, "Noto'g'ri ID");
 
   const [booking] = await db
     .select()
@@ -97,8 +105,8 @@ router.delete("/:id", authenticate as any, async (req: AuthenticatedRequest, res
     .where(and(eq(bookingsTable.id, bookingId), eq(bookingsTable.userId, req.userId!)))
     .limit(1);
 
-  if (!booking) return res.status(404).json({ message: "Bron topilmadi" });
-  if (booking.status === "cancelled") return res.status(400).json({ message: "Bron allaqachon bekor qilingan" });
+  if (!booking) return fail(res, "Bron topilmadi", 404);
+  if (booking.status === "cancelled") return fail(res, "Bron allaqachon bekor qilingan");
 
   await db
     .update(bookingsTable)
@@ -121,7 +129,7 @@ router.delete("/:id", authenticate as any, async (req: AuthenticatedRequest, res
     });
   }
 
-  res.json({ message: "Bron bekor qilindi" });
+  return ok(res, { message: "Bron bekor qilindi" });
 });
 
 export default router;

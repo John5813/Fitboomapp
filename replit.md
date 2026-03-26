@@ -118,4 +118,12 @@ Expo React Native mobile app for FitBoom - an Uzbekistan gym booking platform.
 
 **Localization**: 3 languages (uz/ru/en) via `contexts/LanguageContext.tsx`
 
-**API**: `lib/api.ts` connects to api-server using `EXPO_PUBLIC_DOMAIN` env var.
+**API**: `services/api.ts` is the primary API client. Connects to backend using `EXPO_PUBLIC_DOMAIN` in dev (set to `$REPLIT_DEV_DOMAIN` by the workflow) and falls back to `https://fitboom.replit.app` in production. `lib/api.ts` is a backward-compat shim.
+
+**Auth flow**: SMS OTP (`POST /auth/sms/send` → `POST /auth/sms/verify`) returns `{ accessToken (30d), refreshToken (90d), isNewUser, user }`. Telegram OTP via `@uzfitboom_bot`. Tokens stored in AsyncStorage as `fitboom_access_token` / `fitboom_refresh_token`. Auto-refreshes on 401.
+
+**SMS provider**: Uses `DEVSMS_API_KEY` (DevSMS.uz) if set, falls back to `ESKIZ_EMAIL`+`ESKIZ_PASSWORD` (Eskiz.uz), otherwise logs to console in dev.
+
+**Response format**: All API responses use `{ success: true, data: { ... } }` or `{ success: false, error: "..." }`. The `request()` function in `services/api.ts` auto-unwraps `data`.
+
+**Gender**: DB stores `male/female/other` enum; backend converts `Erkak`→`male`, `Ayol`→`female` automatically.

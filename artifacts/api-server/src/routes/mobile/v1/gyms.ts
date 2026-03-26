@@ -26,6 +26,14 @@ function formatGym(gym: typeof gymsTable.$inferSelect) {
   };
 }
 
+function ok(res: any, data: any) {
+  return res.json({ success: true, data });
+}
+
+function fail(res: any, msg: string, status = 400) {
+  return res.status(status).json({ success: false, error: msg });
+}
+
 router.get("/", async (_req, res) => {
   const gyms = await db
     .select()
@@ -33,22 +41,22 @@ router.get("/", async (_req, res) => {
     .where(eq(gymsTable.isActive, true))
     .orderBy(gymsTable.id);
 
-  res.json({ gyms: gyms.map(formatGym) });
+  return ok(res, { gyms: gyms.map(formatGym) });
 });
 
 router.get("/:id", async (req, res) => {
   const gymId = parseInt(req.params.id);
-  if (isNaN(gymId)) return res.status(400).json({ message: "Noto'g'ri ID" });
+  if (isNaN(gymId)) return fail(res, "Noto'g'ri ID");
 
   const [gym] = await db.select().from(gymsTable).where(eq(gymsTable.id, gymId)).limit(1);
-  if (!gym) return res.status(404).json({ message: "Zal topilmadi" });
+  if (!gym) return fail(res, "Zal topilmadi", 404);
 
-  res.json({ gym: formatGym(gym) });
+  return ok(res, { gym: formatGym(gym) });
 });
 
 router.get("/:id/slots", authenticate as any, async (req: AuthenticatedRequest, res) => {
   const gymId = parseInt(req.params.id);
-  if (isNaN(gymId)) return res.status(400).json({ message: "Noto'g'ri ID" });
+  if (isNaN(gymId)) return fail(res, "Noto'g'ri ID");
 
   const { date } = req.query;
 
@@ -103,7 +111,7 @@ router.get("/:id/slots", authenticate as any, async (req: AuthenticatedRequest, 
     }
   }
 
-  res.json({ slots });
+  return ok(res, { slots });
 });
 
 export default router;

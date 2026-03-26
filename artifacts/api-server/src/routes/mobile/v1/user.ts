@@ -22,10 +22,18 @@ function formatUser(user: typeof usersTable.$inferSelect) {
   };
 }
 
+function ok(res: any, data: any) {
+  return res.json({ success: true, data });
+}
+
+function fail(res: any, error: string, status = 400) {
+  return res.status(status).json({ success: false, error });
+}
+
 router.get("/me", authenticate as any, async (req: AuthenticatedRequest, res) => {
   const [user] = await db.select().from(usersTable).where(eq(usersTable.id, req.userId!)).limit(1);
-  if (!user) return res.status(404).json({ message: "Foydalanuvchi topilmadi" });
-  res.json({ user: formatUser(user) });
+  if (!user) return fail(res, "Foydalanuvchi topilmadi", 404);
+  return ok(res, { user: formatUser(user) });
 });
 
 router.put("/me", authenticate as any, async (req: AuthenticatedRequest, res) => {
@@ -46,7 +54,7 @@ router.put("/me", authenticate as any, async (req: AuthenticatedRequest, res) =>
     .where(eq(usersTable.id, req.userId!))
     .returning();
 
-  res.json({ user: formatUser(user) });
+  return ok(res, { user: formatUser(user) });
 });
 
 router.patch("/profile", authenticate as any, async (req: AuthenticatedRequest, res) => {
@@ -64,7 +72,7 @@ router.patch("/profile", authenticate as any, async (req: AuthenticatedRequest, 
     .where(eq(usersTable.id, req.userId!))
     .returning();
 
-  res.json({ user: formatUser(user) });
+  return ok(res, { user: formatUser(user) });
 });
 
 export default router;

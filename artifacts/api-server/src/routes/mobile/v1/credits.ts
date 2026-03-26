@@ -6,6 +6,10 @@ import { authenticate, type AuthenticatedRequest } from "../../../middleware/aut
 
 const router = Router();
 
+function ok(res: any, data: any) {
+  return res.json({ success: true, data });
+}
+
 router.get("/history", authenticate as any, async (req: AuthenticatedRequest, res) => {
   const history = await db
     .select()
@@ -22,7 +26,7 @@ router.get("/history", authenticate as any, async (req: AuthenticatedRequest, re
     createdAt: h.createdAt,
   }));
 
-  res.json({ creditHistory: formatted });
+  return ok(res, { creditHistory: formatted });
 });
 
 router.get("/topups", authenticate as any, async (req: AuthenticatedRequest, res) => {
@@ -43,7 +47,7 @@ router.get("/topups", authenticate as any, async (req: AuthenticatedRequest, res
     createdAt: t.createdAt,
   }));
 
-  res.json({ topupHistory: formatted });
+  return ok(res, { topupHistory: formatted });
 });
 
 export default router;
