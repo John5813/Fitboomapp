@@ -1,0 +1,11 @@
+{
+  "expo": {
+    "name": "FitBoom",
+    "slug": "rest-express",
+    "version": "1.0.0",
+    "platforms": ["android", "ios"],
+    "android": {
+      "package": "com.javlon5813.fitboom"
+    }
+  }
+}
