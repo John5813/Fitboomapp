@@ -1,0 +1,8 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "Q9aBDxQPF5iutpFKpn99m"
+uri = "file://backend-cancel-fix-prompt.md"
+type = "text"
+title = "Backend dasturchi uchun prompt — Bronni bekor qilish tuzatish"
