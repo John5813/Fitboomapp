@@ -111,6 +111,12 @@ Expo React Native mobile app for FitBoom - an Uzbekistan gym booking platform.
 
 **Auth flow**: SMS OTP (`POST /auth/sms/send` → `POST /auth/sms/verify`) returns `{ accessToken (30d), refreshToken (90d), isNewUser, user }`. Telegram OTP via `@uzfitboom_bot`. Tokens stored in AsyncStorage as `fitboom_access_token` / `fitboom_refresh_token`. Auto-refreshes on 401.
 
+**Booking statuses**: `pending` (yellow, active/upcoming), `completed` (green, visited), `missed` (orange), `cancelled` (red). NO `confirmed` status exists.
+
+**Scanner**: Uses `expo-camera` (v17.x) CameraView with QR barcode scanning. User scans gym's physical QR code → `POST /bookings/verify-qr` with `{ qrData }` → shows success/error result. Cancel booking via `POST /bookings/{id}/cancel`.
+
+**Key API endpoints**: `verifyQr(qrData)` and `cancelBooking(id)` defined in `services/api.ts`.
+
 **Response format**: All API responses use `{ success: true, data: { ... } }` or `{ success: false, error: "..." }`. The `request()` function in `services/api.ts` auto-unwraps `data`.
 
 **Gender**: Values sent directly as `"Erkak"` or `"Ayol"` — no conversion. Production API accepts these values natively.
