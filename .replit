@@ -53,3 +53,4 @@ DEVSMS_API_KEY = "fd73d382e8da0517d588ac583f69dfddc64c0e514153af40ba9012fdea0342
 
 [nix]
 channel = "stable-25_05"
+packages = ["eas-cli"]
