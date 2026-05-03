@@ -156,3 +156,16 @@ Expo React Native mobile app for FitBoom - an Uzbekistan gym booking platform.
 - Gyms: skeletons during load, EmptyState with "clear search" action, haptics on category select, theme-aware header
 
 **Known limitation (next phase):** dark mode swaps `theme.background` and tab bar but most inner card styles still use the static `Colors.*` import — full migration of `Colors.*` → `theme.*` across every StyleSheet is the next iteration.
+
+## Offline cache + slot picker UX (May 2026)
+
+**Caching:** added `@tanstack/query-async-storage-persister` + `@tanstack/react-query-persist-client`. App now persists React Query cache to AsyncStorage (key `fitboom_query_cache`, max age 7 days, buster `v1`). On reopen the user sees the last-known data instantly while a background refetch updates it. Default `staleTime` 30s, `gcTime` 7 days.
+
+**Slot picker rebuild** (`app/gym/[id].tsx`):
+- Booking sheet content wrapped in vertical ScrollView (was overflowing on small screens)
+- Slots now 2-column grid (`flexBasis: '48%'` + `flexGrow: 1`) — capacity numbers fully visible
+- Each slot card: time range on top, color dot + capacity label below
+  - Green dot = plenty of spots
+  - Amber dot + "Kam joy · N/M" label = ≤3 left
+  - Grey dashed border + "To'la" with strike-through = full
+- Modal max-height raised to 90%, min-height 55% so the slot grid never gets cramped
