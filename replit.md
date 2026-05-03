@@ -103,7 +103,7 @@ Expo React Native mobile app for FitBoom - an Uzbekistan gym booking platform.
 
 **Key Screens**: auth.tsx (welcome + phone entry), complete-profile.tsx, home (tabs/index), gyms, bookings, scanner, courses, profile, map, gym/[id], payment, courses/[id]
 
-**Branding**: FitBoom logo = "Fit" white + "Boom" orange + orange zap icon. Green gradient credit card on home/profile screens.
+**Branding**: FitBoom logo = "Fit" dark slate + "Boom" blue (#2563EB). Blue gradient credit card on Home (Clean Light design, graduated 2026-05). Tab bar uses `BRAND_BLUE` (formerly misnamed `ORANGE`) constant in `app/(tabs)/_layout.tsx`. Dark theme toggle is NOT yet implemented — `Colors.ts` ships only the light palette.
 
 **Localization**: 3 languages (uz/ru/en) via `contexts/LanguageContext.tsx`
 
