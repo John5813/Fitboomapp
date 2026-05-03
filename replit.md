@@ -120,3 +120,20 @@ Expo React Native mobile app for FitBoom - an Uzbekistan gym booking platform.
 **Response format**: All API responses use `{ success: true, data: { ... } }` or `{ success: false, error: "..." }`. The `request()` function in `services/api.ts` auto-unwraps `data`.
 
 **Gender**: Values sent directly as `"Erkak"` or `"Ayol"` — no conversion. Production API accepts these values natively.
+
+## Brand & Theme System (May 2026)
+
+**Brand color**: switched from blue (#2563EB) to **orange `#F97316`** to match the new flame logo. All UI accents (tab bar, credit card, buttons, links) reference `Colors.primary` instead of hardcoded values.
+
+**Palette tokens** (`constants/Colors.ts`):
+- `primary` `#F97316`, `primaryDark` `#EA580C`, `primaryLight` rgba 10%
+- `accent` `#FBBF24` (amber, matches flame tip)
+- `navy` `#0B1229`, `navy2` `#0F1A33`, `navy3` `#15213D` (auth dark gradient)
+- Exports `Spacing`, `Radius`, `Text` design tokens for consistent layout/typography
+- `light` and `dark` palette stubs prepared (dark theme toggle still TODO)
+
+**Auth screens**: dark navy gradient now matches logo background; green/blue accents replaced with orange/amber. Welcome button uses primary→primaryDark gradient.
+
+**Tab bar** (`(tabs)/_layout.tsx`): `BRAND` constant points to `Colors.primary` — center scanner button and focused tab indicator now orange.
+
+**Payment modals**: chevron and selection accents updated to brand orange. Semantic success greens (e.g. "copied" feedback) intentionally retained.
