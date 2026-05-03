@@ -137,3 +137,22 @@ Expo React Native mobile app for FitBoom - an Uzbekistan gym booking platform.
 **Tab bar** (`(tabs)/_layout.tsx`): `BRAND` constant points to `Colors.primary` — center scanner button and focused tab indicator now orange.
 
 **Payment modals**: chevron and selection accents updated to brand orange. Semantic success greens (e.g. "copied" feedback) intentionally retained.
+
+## Premium polish layer (May 2026)
+
+**New infrastructure:**
+- `constants/theme.ts` — `lightTheme` + `darkTheme` token objects (background, surface, card, text, border, etc.) plus `Spacing`, `Radius`, `Type` design tokens
+- `contexts/ThemeContext.tsx` — `useTheme()` hook returning `{theme, mode, isDark, toggle, setMode}`. Persists choice in AsyncStorage. Wraps the whole app in `_layout.tsx`
+- `hooks/useHaptics.ts` — `haptics.light/medium/heavy/select/success/warning/error` no-op on web
+- `components/Skeleton.tsx` — animated shimmer placeholder + `GymCardSkeleton`, `BookingCardSkeleton`
+- `components/EmptyState.tsx` — illustration + title + description + optional CTA
+- `components/AnimatedListItem.tsx` — Reanimated fade+rise entrance, staggers by index
+
+**Applied to:**
+- Tab bar: theme-aware background, haptic feedback on tap
+- Profile: dark mode toggle in menu (sun/moon icon), background switches with theme
+- Home: skeletons during gym load, animated card entrance, haptics on actions
+- Bookings: skeletons during load, EmptyState with CTA when empty, animated card entrance, theme-aware card surface
+- Gyms: skeletons during load, EmptyState with "clear search" action, haptics on category select, theme-aware header
+
+**Known limitation (next phase):** dark mode swaps `theme.background` and tab bar but most inner card styles still use the static `Colors.*` import — full migration of `Colors.*` → `theme.*` across every StyleSheet is the next iteration.
